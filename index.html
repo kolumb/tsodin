@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#334" />  
+    <title>Tsoding Emote generator</title>
+    <style>
+body {
+    background: #445;
+    color: white;
+    color-scheme: dark;
+}
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+canvas {
+    border: 2px solid black;
+}
+button {
+    height: 36px;
+}
+label, input, button {
+    cursor: pointer;
+}
+label {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    user-select: none;
+}
+label:hover {
+    background: #0002;
+}
+input {
+    transform: scale(1.5);
+    margin-right: 10px;
+}
+input[type="color"] {
+    margin: 0 23px;
+}
+.layers-selector {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    margin: 0;
+    max-height: 360px;
+    list-style-type: none;
+}
+li {
+    line-height: 40px;
+}
+
+@media (max-width: 1258px) {
+    .layers-selector {
+        max-height: 470px;
+    }
+}
+@media (max-width: 1070px) {
+    .layers-selector {
+        max-height: 700px;
+    }
+}
+@media (max-width: 950px) {
+    .wrapper {
+        flex-direction: column;
+    }
+}
+@media (max-width: 600px) {
+    .layers-selector {
+        max-height: none;
+    }
+}
+
+    </style>
+    <script defer src="emote-generator.js"></script>
+</head>
+<body>
+    <p>Generator for emotes created by <a href="https://tsoding.org/">Tsoding</a> and his community.</p>
+    <div class="wrapper">
+        <canvas id="Canvas"></canvas>
+        <ul class="layers-selector">
+        </ul>
+    </div>
+    <button id="DownloadElem">Download</button>
+</body>
+</html>
