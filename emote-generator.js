@@ -12,6 +12,7 @@ canvas.height = height
 
 let skinColor = "#ffe6d5"
 
+const imagesFolder = "images"
 const layers =
     [ {label: "Hmmm Hands"           , fileName: "HmmmHands.png"     , enabled: false}
     , {label: "Anger"                , fileName: "Anger-sign.png"    , enabled: false}
@@ -91,7 +92,7 @@ layers.forEach(layer => {
     layersSelector.appendChild(li)
 
     layer.image = new Image()
-    layer.image.src = layer.fileName
+    layer.image.src = `${imagesFolder}/${layer.fileName}`
     layer.image.addEventListener("load", e => {
         loadedImages++
         if (loadedImages === layers.length) {
