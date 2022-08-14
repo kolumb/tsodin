@@ -184,3 +184,24 @@ downloadElem.addEventListener("click", e => {
     const fileName = layers.filter(l => l.enabled).map(l => l.fileName).map(name => name.slice(0, -4)).join("-") + ".png"
     download(fileName, canvas.toDataURL("image/png")) 
 })
+
+function randomColor() {
+    const r = Math.floor(Math.random() * 256).toString(16).padStart(2, "0")
+    const g = Math.floor(Math.random() * 256).toString(16).padStart(2, "0")
+    const b = Math.floor(Math.random() * 256).toString(16).padStart(2, "0")
+    return "#" + r + g + b;
+}
+const randButtons = document.querySelectorAll(".layers-selector button")
+window.addEventListener("keydown", e => {
+    if (e.code === "KeyR") {
+        const index = Math.floor(Math.random() * randButtons.length)
+        randButtons[index].click()
+    }
+    if (e.code === "KeyD") {
+        downloadElem.click()
+    }
+    if (e.code === "KeyC") {
+        colorSelector.value = randomColor()
+        render()
+    }
+})

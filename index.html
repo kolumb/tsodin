@@ -50,10 +50,25 @@ input[type="color"] {
     flex-wrap: wrap;
     margin: 0;
     max-height: 360px;
+}
+ul {
     list-style-type: none;
 }
 li {
     line-height: 40px;
+}
+kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: 1.25em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
 }
 
 @media (max-width: 1450px) {
@@ -88,5 +103,18 @@ li {
         </ul>
     </div>
     <button id="DownloadElem">Download</button>
+    <p>Keyboard controls:
+        <ul>
+            <li>
+                <kbd>R</kbd> — <strong>R</strong>andom selection
+            </li>
+            <li>
+                <kbd>C</kbd> — Random <strong>C</strong>olor
+            </li>
+            <li>
+                <kbd>D</kbd> — <strong>D</strong>ownload result
+            </li>
+        </ul>
+    </p>
 </body>
 </html>
