@@ -75,43 +75,36 @@ addRandomizeButton("All", e => {
         layer.enabled = Math.random() < 0.21
         layer.checkbox.checked = layer.enabled
     })
-    render()
 })
 addRandomizeButton("mouth", e => {
-    const mouthes = layers.filter(layer => layer.type === "mouth")
-    const randIndex = Math.floor(Math.random() * mouthes.length)
-    mouthes.forEach((layer, i) => {
-        layer.enabled = i === randIndex
+    const layersOfType = layers.filter(layer => layer.type === "mouth")
+    const index = Math.floor(Math.random() * layersOfType.length)
+    layersOfType.forEach((layer, i) => {
+        layer.enabled = i === index
         layer.checkbox.checked = layer.enabled
     })
-    render()
 })
 addRandomizeButton("eyes", e => {
-    const eyes = layers.filter(layer => layer.type === "eyes")
-    const randIndex = Math.floor(Math.random() * eyes.length)
-    eyes.forEach((layer, i) => {
-        layer.enabled = i === randIndex
+    const layersOfType = layers.filter(layer => layer.type === "eyes")
+    const index = Math.floor(Math.random() * layersOfType.length)
+    layersOfType.forEach((layer, i) => {
+        layer.enabled = i === index
         layer.checkbox.checked = layer.enabled
     })
-    render()
 })
 addRandomizeButton("face", e => {
-    const face = layers.filter(layer => layer.type === "face")
-    const randIndex = Math.floor(Math.random() * face.length)
-    face.forEach((layer, i) => {
+    const layersOfType = layers.filter(layer => layer.type === "face")
+    layersOfType.forEach((layer, i) => {
         layer.enabled = Math.random() < 0.25
         layer.checkbox.checked = layer.enabled
     })
-    render()
 })
 addRandomizeButton("accessories", e => {
-    const accessories = layers.filter(layer => layer.type === "accessories")
-    const randIndex = Math.floor(Math.random() * accessories.length)
-    accessories.forEach((layer, i) => {
+    const layersOfType = layers.filter(layer => layer.type === "accessories")
+    layersOfType.forEach((layer, i) => {
         layer.enabled = Math.random() < 0.21
         layer.checkbox.checked = layer.enabled
     })
-    render()
 })
 
 let loadedImages = 0
