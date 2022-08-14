@@ -40,6 +40,7 @@ const layers =
     , {label: "Awoo mouth"           , fileName: "AwooMouth.png"     , enabled: false , type: "mouth"}
     , {label: "Dissapointed mouth"   , fileName: "Dissapointed.png"  , enabled: false , type: "mouth"}
     , {label: "Evil mouth"           , fileName: "EvilMouth.png"     , enabled: false , type: "mouth"}
+    , {label: "Grin mouth"           , fileName: "Grin.png"          , enabled: false , type: "mouth"}
     , {label: "PauseChamp mouth"     , fileName: "Pause.png"         , enabled: false , type: "mouth"}
     , {label: "Pocker mouth"         , fileName: "PockerMouth.png"   , enabled: false , type: "mouth"}
     , {label: "Pog mouth"            , fileName: "Pog.png"           , enabled: false , type: "mouth"}
