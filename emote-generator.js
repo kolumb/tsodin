@@ -157,11 +157,6 @@ function render() {
         }
     }
 }
-const HISTORY_GAP = 2
-function saveHistory() {
-    historyCtx.drawImage(history, historySize + HISTORY_GAP, 0)
-    historyCtx.drawImage(canvas, 0, 0, historySize, historySize)
-}
 
 function download(name, dataString) {
     const link = document.createElement('a')
@@ -170,23 +165,77 @@ function download(name, dataString) {
     link.click()
 }
 
-
-const history = document.querySelector("#CanvasHistory")
-const historyCtx = history.getContext("2d", {alpha: false})
+const history = []
+let redoIndex = 0
+const historyCanvas = document.querySelector("#CanvasHistory")
+const historyCtx = historyCanvas.getContext("2d", {alpha: false})
 const historySize = 48
 historyCtx.fillStyle = "#393947"
-historyCtx.fillRect(0, 0, history.width, history.height)
+historyCtx.fillRect(0, 0, historyCanvas.width, historyCanvas.height)
 
 function updateHistoryDimentions() {
-    const snapshot = historyCtx.getImageData(0, 0, history.width, history.height)
-    history.width = innerWidth
-    history.height = historySize
+    const snapshot = historyCtx.getImageData(0, 0, historyCanvas.width, historyCanvas.height)
+    historyCanvas.width = innerWidth
+    historyCanvas.height = historySize
     historyCtx.fillStyle = "#393947"
-    historyCtx.fillRect(0, 0, history.width, history.height)
+    historyCtx.fillRect(0, 0, historyCanvas.width, historyCanvas.height)
     historyCtx.putImageData(snapshot, 0, 0)
 }
 updateHistoryDimentions()
 
+const HISTORY_GAP = 2
+function saveHistory() {
+    const historyEntry = serializeState()
+    if (historyEntry !== history[history.length - 1]) {
+        historyCtx.drawImage(historyCanvas, historySize + HISTORY_GAP, 0)
+        historyCtx.drawImage(canvas, 0, 0, historySize, historySize)
+        history.push(historyEntry)
+    }
+    redoIndex = history.length - 1
+}
+function serializeState() {
+    const bits = layers.map(l=>l.enabled ? 1:0)
+    let index = 0
+    let byte = 0
+    const bytes = []
+    for (let i = 0; i < bits.length; i++) {
+        if (index === 8) {
+            index %= 8
+            bytes.push(byte)
+            byte = 0
+        }
+        if (bits[i]) {
+            byte += 2 ** index
+        }
+        index++
+    }
+    if (index !== 0) {
+        bytes.push(byte)
+    }
+    return bytes.map(toHex).join("")+"s"+colorSelector.value.slice(1)
+}
+function deserializeState(entry) {
+    const bitmask_color = entry.split("s")
+    if (bitmask_color.length != 2) {
+        console.error("Wrong state", entry)
+        return
+    }
+    const bitmask = bitmask_color[0]
+    const color = bitmask_color[1]
+    const bits = []
+    Array.from(bitmask.matchAll(/../g)).map(byte=>parseInt(byte, 16)).map(byte => {
+        for (let i = 0; i < 8; i++) {
+            bits.push(Boolean(2 ** i & byte))
+        }
+    })
+    bits.forEach((bit, i) => {
+        if (i >= layers.length) return;
+        layers[i].enabled = bit
+        layers[i].checkbox.checked = bit
+    })
+    colorSelector.value = "#" + color
+    render()
+}
 
 window.addEventListener("resize", e => {
     updateHistoryDimentions()
@@ -194,13 +243,11 @@ window.addEventListener("resize", e => {
 
 layersSelector.addEventListener("click", e => {
     if (e.target.tagName === "LABEL") return;
-    setTimeout(() => {
-        layers.forEach(layer => {
-            layer.enabled = layer.checkbox.checked
-        })
-        render()
-        saveHistory()
-    }, 50)
+    layers.forEach(layer => {
+        layer.enabled = layer.checkbox.checked
+    })
+    render()
+    saveHistory()
 })
 colorSelector.addEventListener("input", render)
 colorSelector.addEventListener("change", saveHistory)
@@ -209,24 +256,44 @@ downloadElem.addEventListener("click", e => {
     download(fileName, canvas.toDataURL("image/png")) 
 })
 
+function toHex(numb) {
+    return numb.toString(16).padStart(2, "0")
+}
+
 function randomColor() {
-    const r = Math.floor(Math.random() * 256).toString(16).padStart(2, "0")
-    const g = Math.floor(Math.random() * 256).toString(16).padStart(2, "0")
-    const b = Math.floor(Math.random() * 256).toString(16).padStart(2, "0")
+    const r = toHex(Math.floor(Math.random() * 256))
+    const g = toHex(Math.floor(Math.random() * 256))
+    const b = toHex(Math.floor(Math.random() * 256))
     return "#" + r + g + b;
 }
 const randButtons = document.querySelectorAll(".layers-selector button")
 window.addEventListener("keydown", e => {
-    if (e.code === "KeyR") {
-        const index = Math.floor(Math.random() * randButtons.length)
-        randButtons[index].click()
-    }
-    if (e.code === "KeyD") {
-        downloadElem.click()
-    }
-    if (e.code === "KeyC") {
-        colorSelector.value = randomColor()
-        render()
-        saveHistory()
+    switch (e.code) {
+        case "KeyR":
+            if (e.ctrlKey === false) {
+                const index = Math.floor(Math.random() * randButtons.length)
+                randButtons[index].click()
+            } break
+        case "KeyD":
+            downloadElem.click()
+            break
+        case "KeyC":
+            colorSelector.value = randomColor()
+            render()
+            saveHistory()
+            break
+        case "KeyZ":
+            if (e.ctrlKey) {
+                if (e.shiftKey === false) {
+                    redoIndex = Math.max(0, redoIndex - 1)
+                    deserializeState(history[redoIndex])
+                    break
+                }
+            } // fall through
+        case "KeyY":
+            if (e.ctrlKey) {
+                redoIndex = Math.min(history.length - 1, redoIndex + 1)
+                deserializeState(history[redoIndex])
+            } break
     }
 })
