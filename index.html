@@ -13,13 +13,14 @@ body {
     background: #445;
     color: white;
     color-scheme: dark;
+    margin-bottom: 80px;
 }
 .wrapper {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
 }
-canvas {
+#CanvasResult {
     border: 2px solid black;
 }
 button {
@@ -70,6 +71,11 @@ kbd {
     padding: 2px 4px;
     white-space: nowrap;
 }
+#CanvasHistory {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
 
 @media (max-width: 1450px) {
     .layers-selector {
@@ -98,7 +104,7 @@ kbd {
 <body>
     <p>Generator for emotes created by <a href="https://tsoding.org/">Tsoding</a> and his community.</p>
     <div class="wrapper">
-        <canvas id="Canvas"></canvas>
+        <canvas id="CanvasResult"></canvas>
         <ul class="layers-selector">
         </ul>
     </div>
@@ -116,5 +122,6 @@ kbd {
             </li>
         </ul>
     </p>
+    <canvas id="CanvasHistory"></canvas>
 </body>
 </html>

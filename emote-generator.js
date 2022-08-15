@@ -3,8 +3,8 @@
 const layersSelector = document.querySelector(".layers-selector")
 const downloadElem = document.querySelector("#DownloadElem")
 
-const canvas = document.querySelector("#Canvas")
-const ctx = canvas.getContext("2d")
+const canvas = document.querySelector("#CanvasResult")
+const ctx = canvas.getContext("2d", {alpha: false})
 const width = 345
 const height = 345
 canvas.width = width
@@ -129,6 +129,7 @@ layers.forEach(layer => {
         loadedImages++
         if (loadedImages === layers.length) {
             render()
+            saveHistory()
         }
     })
 })
@@ -156,6 +157,11 @@ function render() {
         }
     }
 }
+const HISTORY_GAP = 2
+function saveHistory() {
+    historyCtx.drawImage(history, historySize + HISTORY_GAP, 0)
+    historyCtx.drawImage(canvas, 0, 0, historySize, historySize)
+}
 
 function download(name, dataString) {
     const link = document.createElement('a')
@@ -164,15 +170,40 @@ function download(name, dataString) {
     link.click()
 }
 
+
+const history = document.querySelector("#CanvasHistory")
+const historyCtx = history.getContext("2d", {alpha: false})
+const historySize = 48
+historyCtx.fillStyle = "#393947"
+historyCtx.fillRect(0, 0, history.width, history.height)
+
+function updateHistoryDimentions() {
+    const snapshot = historyCtx.getImageData(0, 0, history.width, history.height)
+    history.width = innerWidth
+    history.height = historySize
+    historyCtx.fillStyle = "#393947"
+    historyCtx.fillRect(0, 0, history.width, history.height)
+    historyCtx.putImageData(snapshot, 0, 0)
+}
+updateHistoryDimentions()
+
+
+window.addEventListener("resize", e => {
+    updateHistoryDimentions()
+})
+
 layersSelector.addEventListener("click", e => {
+    if (e.target.tagName === "LABEL") return;
     setTimeout(() => {
         layers.forEach(layer => {
             layer.enabled = layer.checkbox.checked
         })
         render()
+        saveHistory()
     }, 50)
 })
 colorSelector.addEventListener("input", render)
+colorSelector.addEventListener("change", saveHistory)
 downloadElem.addEventListener("click", e => {
     const fileName = layers.filter(l => l.enabled).map(l => l.fileName).map(name => name.slice(0, -4)).join("-") + ".png"
     download(fileName, canvas.toDataURL("image/png")) 
@@ -196,5 +227,6 @@ window.addEventListener("keydown", e => {
     if (e.code === "KeyC") {
         colorSelector.value = randomColor()
         render()
+        saveHistory()
     }
 })
