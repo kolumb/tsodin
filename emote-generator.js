@@ -2,6 +2,7 @@
 
 const layersSelector = document.querySelector(".layers-selector")
 const downloadElem = document.querySelector("#DownloadElem")
+const shareElem = document.querySelector("#ShareElem")
 
 const canvas = document.querySelector("#CanvasResult")
 const ctx = canvas.getContext("2d", {alpha: false})
@@ -237,9 +238,48 @@ function deserializeState(entry) {
     render()
 }
 
-window.addEventListener("resize", e => {
-    updateHistoryDimentions()
-})
+if (location.search) {
+    deserializeState(location.search.slice(1))
+}
+
+if (navigator.canShare && navigator.canShare({url: location.href})) {
+    shareElem.addEventListener("click", e => {
+        const state = history[redoIndex]
+        const url = location.href.split("?")[0] + "?" + state
+        navigator.share({url: url})
+        history.replaceState(null, '', url);
+    })
+} else {
+    // https://hackernoon.com/copying-text-to-clipboard-with-javascript-df4d4988697f
+    const copyToClipboard = str => {
+      const el = document.createElement('textarea');
+      el.value = str;
+      el.setAttribute('readonly', '');
+      el.style.position = 'absolute';
+      el.style.left = '-9999px';
+      document.body.appendChild(el);
+      const selected =
+        document.getSelection().rangeCount > 0
+          ? document.getSelection().getRangeAt(0)
+          : false;
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      if (selected) {
+        document.getSelection().removeAllRanges();
+        document.getSelection().addRange(selected);
+      }
+      return true
+    };
+    shareElem.addEventListener("click", e => {
+        const state = history[redoIndex]
+        const url = location.href.split("?")[0] + "?" + state
+        alert(copyToClipboard(url) ? `Copied url to clipboard: ${url}` : `Failed to copy the url: ${url}`)
+        history.replaceState(null, '', url);
+    })
+}
+
+window.addEventListener("resize", updateHistoryDimentions)
 
 layersSelector.addEventListener("click", e => {
     if (e.target.tagName === "LABEL") return;
