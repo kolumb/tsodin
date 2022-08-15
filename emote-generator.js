@@ -292,8 +292,7 @@ layersSelector.addEventListener("click", e => {
 colorSelector.addEventListener("input", render)
 colorSelector.addEventListener("change", saveHistory)
 downloadElem.addEventListener("click", e => {
-    const fileName = layers.filter(l => l.enabled).map(l => l.fileName).map(name => name.slice(0, -4)).join("-") + ".png"
-    download(fileName, canvas.toDataURL("image/png")) 
+    download(serializeState(), canvas.toDataURL("image/png"))
 })
 
 historyCanvas.addEventListener("click", e => {
