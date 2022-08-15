@@ -256,6 +256,15 @@ downloadElem.addEventListener("click", e => {
     download(fileName, canvas.toDataURL("image/png")) 
 })
 
+historyCanvas.addEventListener("click", e => {
+    const x = e.offsetX
+    const index = Math.floor(x / (historySize + HISTORY_GAP))
+    if (index > history.length - 1) return;
+    redoIndex = history.length - 1 - index
+    deserializeState(history[redoIndex])
+})
+
+
 function toHex(numb) {
     return numb.toString(16).padStart(2, "0")
 }
