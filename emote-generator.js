@@ -17,10 +17,13 @@ const imagesFolder = "images"
 const icon4Type = {eyes: "👁", mouth: "👄", face: "👃", accessories: "🕶️", special: "🤔"}
 const layers =
     [ {label: "Hmmm Hands"           , fileName: "HmmmHands.png"     , enabled: false , type: "special"}
+    , {label: "Wine"                 , fileName: "Wine.png"          , enabled: false , type: "accessories"}
     , {label: "Anger"                , fileName: "Anger-sign.png"    , enabled: false , type: "accessories"}
     , {label: "Blow"                 , fileName: "Blow.png"          , enabled: false , type: "accessories"}
     , {label: "Mustaches"            , fileName: "Mustaches.png"     , enabled: false , type: "face"}
+    , {label: "Top hat"              , fileName: "TopHat.png"        , enabled: false , type: "accessories"}
     , {label: "Sunglasses"           , fileName: "CoolGlasses.png"   , enabled: false , type: "accessories"}
+    , {label: "Monocle"              , fileName: "Monocle.png"       , enabled: false , type: "accessories"}
 
     , {label: "Eyes"                 , fileName: "WEyes.png"         , enabled: true  , type: "eyes"}
     , {label: "Absent eyes"          , fileName: "AbsentEyes.png"    , enabled: false , type: "eyes"}
