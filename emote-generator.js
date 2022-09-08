@@ -287,6 +287,18 @@ if (navigator.canShare && navigator.canShare({url: location.href})) {
 
 window.addEventListener("resize", updateHistoryDimentions)
 
+layersSelector.addEventListener("contextmenu", e => {
+    e.preventDefault()
+    if (e.target.tagName !== "LABEL" && e.target.tagName !== "INPUT") return;
+    let target = e.target
+    if (e.target.tagName === "LABEL") target = target.firstChild;
+    const index = target.id.slice("layer-".length)
+    if (index) {
+        layers[index].checkbox.checked = false
+        layers[index].unwanted = true
+        layers[index].checkbox.parentElement.classList.add("unwanted")
+    }
+})
 layersSelector.addEventListener("click", e => {
     if (e.target.tagName === "LABEL") return;
     const index = e.target.id.slice("layer-".length)
