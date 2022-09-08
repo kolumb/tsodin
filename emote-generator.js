@@ -76,7 +76,7 @@ function addRandomizeButton(type, clickHandler) {
 }
 addRandomizeButton("All", e => {
     layers.forEach(layer => {
-        layer.enabled = Math.random() < 0.21
+        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.21)
         layer.checkbox.checked = layer.enabled
     })
 })
@@ -84,7 +84,7 @@ addRandomizeButton("mouth", e => {
     const layersOfType = layers.filter(layer => layer.type === "mouth")
     const index = Math.floor(Math.random() * layersOfType.length)
     layersOfType.forEach((layer, i) => {
-        layer.enabled = i === index
+        layer.enabled = !layer.unwanted && (layer.desired || i === index)
         layer.checkbox.checked = layer.enabled
     })
 })
@@ -92,31 +92,34 @@ addRandomizeButton("eyes", e => {
     const layersOfType = layers.filter(layer => layer.type === "eyes")
     const index = Math.floor(Math.random() * layersOfType.length)
     layersOfType.forEach((layer, i) => {
-        layer.enabled = i === index
+        layer.enabled = !layer.unwanted && (layer.desired || i === index)
         layer.checkbox.checked = layer.enabled
     })
 })
 addRandomizeButton("face", e => {
     const layersOfType = layers.filter(layer => layer.type === "face")
     layersOfType.forEach((layer, i) => {
-        layer.enabled = Math.random() < 0.25
+        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.25)
         layer.checkbox.checked = layer.enabled
     })
 })
 addRandomizeButton("accessories", e => {
     const layersOfType = layers.filter(layer => layer.type === "accessories")
     layersOfType.forEach((layer, i) => {
-        layer.enabled = Math.random() < 0.21
+        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.21)
         layer.checkbox.checked = layer.enabled
     })
 })
 
 let loadedImages = 0
-layers.forEach(layer => {
+layers.forEach((layer, i) => {
+    layer.desired = false
+    layer.unwanted = false
+
     const input = document.createElement("input")
     input.type = "checkbox"
     input.checked = layer.enabled
-    input.id = "layer-" + layer.label
+    input.id = "layer-" + i
     layer.checkbox = input
 
     const label = document.createElement("label")
@@ -286,6 +289,26 @@ window.addEventListener("resize", updateHistoryDimentions)
 
 layersSelector.addEventListener("click", e => {
     if (e.target.tagName === "LABEL") return;
+    const index = e.target.id.slice("layer-".length)
+    if (index) {
+        const layer = layers[index]
+        if (e.shiftKey) {
+            layer.checkbox.checked = true
+            layer.desired = true
+            layer.checkbox.parentElement.classList.add("desired")
+        } else if (layer.desired) {
+            layer.desired = false
+            layer.checkbox.parentElement.classList.remove("desired")
+        }
+        if (e.ctrlKey) {
+            layer.checkbox.checked = false
+            layer.unwanted = true
+            layer.checkbox.parentElement.classList.add("unwanted")
+        } else if (layer.unwanted) {
+            layer.unwanted = false
+            layer.checkbox.parentElement.classList.remove("unwanted")
+        }
+    }
     layers.forEach(layer => {
         layer.enabled = layer.checkbox.checked
     })
