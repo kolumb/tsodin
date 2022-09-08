@@ -297,7 +297,10 @@ layersSelector.addEventListener("contextmenu", e => {
         layers[index].checkbox.checked = false
         layers[index].unwanted = true
         layers[index].checkbox.parentElement.classList.add("unwanted")
+        layers[index].enabled = false
     }
+    render()
+    saveHistory()
 })
 layersSelector.addEventListener("click", e => {
     if (e.target.tagName === "LABEL") return;
