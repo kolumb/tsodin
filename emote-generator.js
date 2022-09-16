@@ -58,6 +58,8 @@ const layers =
     , {label: "Sweat"                , fileName: "Sweat.png"         , enabled: false , type: "accessories"}
     , {label: "Angry eyebrows"       , fileName: "AngryEyebrows.png" , enabled: false , type: "face"}
     , {label: "Smily cheeks"         , fileName: "SmilyCheeks.png"   , enabled: false , type: "face"}
+    , {label: "Grey Brows"           , fileName: "GrandBrows.png"    , enabled: false , type: "face"}
+    , {label: "Grey Mustaches"       , fileName: "GrandMustache.png" , enabled: false , type: "face"}
     , {label: "Nose"                 , fileName: "Nose.png"          , enabled: true  , type: "face"}
     , {label: "Blush on cheeks"      , fileName: "Blush.png"         , enabled: false , type: "face"}
     , {label: "Background"           , fileName: "HeadPhones.png"    , enabled: true  , type: "special"}
@@ -76,7 +78,7 @@ function addRandomizeButton(type, clickHandler) {
 }
 addRandomizeButton("All", e => {
     layers.forEach(layer => {
-        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.21)
+        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.20)
         layer.checkbox.checked = layer.enabled
     })
 })
@@ -99,7 +101,7 @@ addRandomizeButton("eyes", e => {
 addRandomizeButton("face", e => {
     const layersOfType = layers.filter(layer => layer.type === "face")
     layersOfType.forEach((layer, i) => {
-        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.25)
+        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.23)
         layer.checkbox.checked = layer.enabled
     })
 })
