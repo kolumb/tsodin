@@ -115,6 +115,9 @@ addRandomizeButton("accessories", e => {
 
 let loadedImages = 0
 layers.forEach((layer, i) => {
+    layer.sortingShift = 0
+    layer.index = i
+
     layer.desired = false
     layer.unwanted = false
 
@@ -159,8 +162,11 @@ colorSelector.value = skinColor
 function render() {
     ctx.fillStyle = colorSelector.value
     ctx.fillRect(0, 0, width, height)
-    for (let i = layers.length - 1; i >= 0; i--) {
-        const layer = layers[i]
+    const layersCopy = layers.map(x => x).sort((l1, l2) => {
+        return (l1.index + l1.sortingShift) - (l2.index + l2.sortingShift)
+    })
+    for (let i = layersCopy.length - 1; i >= 0; i--) {
+        const layer = layersCopy[i]
         if (layer.enabled) {
             ctx.drawImage(layer.image, 0, 0)
         }
@@ -304,10 +310,12 @@ layersSelector.addEventListener("contextmenu", e => {
     render()
     saveHistory()
 })
+let lastSelectedLayer = -1
 layersSelector.addEventListener("click", e => {
     if (e.target.tagName === "LABEL") return;
     const index = e.target.id.slice("layer-".length)
     if (index) {
+        lastSelectedLayer = Number(index)
         const layer = layers[index]
         if (e.shiftKey) {
             layer.checkbox.checked = true
@@ -346,6 +354,27 @@ historyCanvas.addEventListener("click", e => {
     deserializeState(history[redoIndex])
 })
 
+// https://bost.ocks.org/mike/shuffle/
+function shuffle(array) {
+  var m = array.length, t, i;
+  while (m) {
+    m--
+    i = Math.floor(Math.random() * m);
+    t = array[m];
+    array[m] = array[i];
+    array[i] = t;
+  }
+  return array;
+}
+const accordingToShift = (l1, l2) => {
+    return (l1.index + l1.sortingShift) - (l2.index + l2.sortingShift)
+}
+function updateLayerOrder() {
+    layers.map(x=>x).sort(accordingToShift).forEach(l => {
+        layersSelector.append(l.checkbox.parentElement.parentElement)
+    })
+    layersSelector.append(colorSelector.parentElement.parentElement)
+}
 
 function toHex(numb) {
     return numb.toString(16).padStart(2, "0")
@@ -369,10 +398,11 @@ window.addEventListener("keydown", e => {
             downloadElem.click()
             break
         case "KeyC":
-            colorSelector.value = randomColor()
-            render()
-            saveHistory()
-            break
+            if (e.ctrlKey === false) {
+                colorSelector.value = randomColor()
+                render()
+                saveHistory()
+            } break
         case "KeyZ":
             if (e.ctrlKey) {
                 if (e.shiftKey === false) {
@@ -385,6 +415,38 @@ window.addEventListener("keydown", e => {
             if (e.ctrlKey) {
                 redoIndex = Math.min(history.length - 1, redoIndex + 1)
                 deserializeState(history[redoIndex])
+            } break
+        case "KeyS": {
+                let indexes = new Array(layers.length).fill(0).map((_, i) => i)
+                if (e.shiftKey === false) indexes = shuffle(indexes)
+                layers.forEach((l, i) => {
+                    l.sortingShift = indexes[i] - l.index
+                })
+                updateLayerOrder()
+                render()
+            } break
+        case "ArrowLeft":
+            if (lastSelectedLayer >= 0) {
+                const layer = layers[lastSelectedLayer]
+                if (lastSelectedLayer + layer.sortingShift > 0) {
+                    const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift - 1]
+                    layer.sortingShift -= 1
+                    otherLayer.sortingShift += 1
+                    updateLayerOrder()
+                }
+                render()
+
+            } break
+        case "ArrowRight":
+            if (lastSelectedLayer >= 0) {
+                const layer = layers[lastSelectedLayer]
+                if (lastSelectedLayer + layer.sortingShift < layers.length - 1) {
+                    const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift + 1]
+                    layer.sortingShift += 1
+                    otherLayer.sortingShift -= 1
+                    updateLayerOrder()
+                }
+                render()
             } break
     }
 })

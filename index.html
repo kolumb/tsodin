@@ -66,6 +66,13 @@ li {
     text-decoration: underline;
 }
 
+.keyboard-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+.keyboard-list li {
+    padding-right: 3em;
+}
 kbd {
     background-color: #eee;
     border-radius: 3px;
@@ -119,7 +126,7 @@ kbd {
     </div>
     <button id="DownloadElem">Download</button> <button id="ShareElem">Share</button>
     <p>Keyboard controls:
-        <ul>
+        <ul class="keyboard-list">
             <li>
                 <kbd>R</kbd> — <strong>R</strong>andom selection
             </li>
@@ -134,6 +141,12 @@ kbd {
             </li>
             <li>
                 <kbd>Ctrl</kbd> Click — Lock disabled
+            </li>
+            <li>
+                <kbd>←</kbd> or <kbd>→</kbd> — Change order of last selected layer
+            </li>
+            <li>
+                <kbd>S</kbd> — <strong>S</strong>haffle layer order
             </li>
         </ul>
     </p>
