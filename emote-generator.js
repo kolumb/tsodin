@@ -11,7 +11,7 @@ const height = 345
 canvas.width = width
 canvas.height = height
 
-let skinColor = "#ffe6d5"
+const DEFAULT_SKIN_COLOR = "#ffe6d5"
 
 const imagesFolder = "images"
 const icon4Type = {eyes: "👁", mouth: "👄", face: "👃", accessories: "🕶️", special: "🤔"}
@@ -147,7 +147,7 @@ layers.forEach((layer, i) => {
 })
 const colorSelector = document.createElement("input")
 colorSelector.type = "color"
-colorSelector.value = skinColor
+colorSelector.value = DEFAULT_SKIN_COLOR
 {
     const label = document.createElement("label")
     label.appendChild(document.createTextNode("Skin color"))
@@ -399,7 +399,7 @@ window.addEventListener("keydown", e => {
             break
         case "KeyC":
             if (e.ctrlKey === false) {
-                colorSelector.value = randomColor()
+                colorSelector.value = e.shiftKey ? DEFAULT_SKIN_COLOR : randomColor()
                 render()
                 saveHistory()
             } break
