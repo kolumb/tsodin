@@ -81,6 +81,9 @@ addRandomizeButton("All", e => {
         layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.20)
         layer.checkbox.checked = layer.enabled
     })
+    colorSelector.value = randomColor()
+    render()
+    saveHistory()
 })
 addRandomizeButton("mouth", e => {
     const layersOfType = layers.filter(layer => layer.type === "mouth")
