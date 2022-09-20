@@ -129,6 +129,16 @@ kbd {
     #CanvasResult {
         width: 250px;
     }
+    ul {
+        padding: 0;
+    }
+    label {
+        padding-left: 4px;
+    }
+    input {
+        margin-right: 6px;
+        transform: scale(1.2);
+    }
 }
 
     </style>
@@ -148,41 +158,41 @@ kbd {
         <ul id="randomization-selector">
             <li>
                 <button id="Random-all" title="Keyboard shortcut - R">Randomize everything</button>
-                <label>
+                <label title="Randomize everything including color">
                     <input id="including-color" type="checkbox">
-                    including color
+                    + color
                 </label>
-                <label>
+                <label title="Randomize everything including order">
                     <input id="including-order" type="checkbox">
-                    including order
+                    + order
                 </label>
             </li>
             <li>
                 <button id="Random-eyes" title="Eyes">Randomize 👁</button>
-                <label>
+                <label title="limit randomization to one pair of eyes">
                     <input id="limit-eyes" type="checkbox" checked>
-                    limit to one pair of eyes
+                    limit to 1
                 </label>
             </li>
             <li>
                 <button id="Random-mouth" title="Mouth">Randomize 👄</button>
-                <label>
+                <label title="limit randomization to one mouth">
                     <input id="limit-mouth" type="checkbox" checked>
-                    limit to one mouth
+                    limit to 1
                 </label>
             </li>
             <li>
                 <button id="Random-face" title="Face features">Randomize 👃</button>
-                <label>
+                <label title="limit randomization to one facial feature">
                     <input id="limit-face" type="checkbox">
-                    limit to one facial feature
+                    limit to 1
                 </label>
             </li>
             <li>
                 <button id="Random-accessories" title="Accessories">Randomize 🕶️</button>
-                <label>
+                <label title="limit randomization to one accessory">
                     <input id="limit-accessories" type="checkbox">
-                    limit to one accessory
+                    limit to 1
                 </label>
             </li>
             <li>
