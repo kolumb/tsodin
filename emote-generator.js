@@ -4,6 +4,19 @@ const layersSelector = document.querySelector(".layers-selector")
 const downloadElem = document.querySelector("#DownloadElem")
 const shareElem = document.querySelector("#ShareElem")
 
+const randomizationSelector = document.querySelector("#randomization-selector")
+const randAllElem = document.querySelector("#Random-all")
+const includingColorElem = document.querySelector("#including-color")
+const randEyesElem = document.querySelector("#Random-eyes")
+const limitEyesElem = document.querySelector("#limit-eyes")
+const randMouthElem = document.querySelector("#Random-mouth")
+const limitMouthElem = document.querySelector("#limit-mouth")
+const randFaceElem = document.querySelector("#Random-face")
+const limitFaceElem = document.querySelector("#limit-face")
+const randAccessoriesElem = document.querySelector("#Random-accessories")
+const limitAccessoriesElem = document.querySelector("#limit-accessories")
+const randColorElem = document.querySelector("#Random-color")
+
 const canvas = document.querySelector("#CanvasResult")
 const ctx = canvas.getContext("2d", {alpha: false})
 const width = 345
@@ -14,13 +27,17 @@ canvas.height = height
 const DEFAULT_SKIN_COLOR = "#ffe6d5"
 
 const imagesFolder = "images"
-const icon4Type = {eyes: "👁", mouth: "👄", face: "👃", accessories: "🕶️", special: "🤔"}
+const types =
+    { eyes:        {icon: "👁", limit: limitEyesElem}
+    , mouth:       {icon: "👄", limit: limitMouthElem}
+    , face:        {icon: "👃", limit: limitFaceElem}
+    , accessories: {icon: "🕶️", limit: limitAccessoriesElem}
+    }
 const layers =
-    [ {label: "Hmmm Hands"           , fileName: "HmmmHands.png"     , enabled: false , type: "special"}
+    [ {label: "Hmmm Hands"           , fileName: "HmmmHands.png"     , enabled: false , type: "accessories"}
     , {label: "Wine"                 , fileName: "Wine.png"          , enabled: false , type: "accessories"}
     , {label: "Anger"                , fileName: "Anger-sign.png"    , enabled: false , type: "accessories"}
     , {label: "Blow"                 , fileName: "Blow.png"          , enabled: false , type: "accessories"}
-    , {label: "Mustaches"            , fileName: "Mustaches.png"     , enabled: false , type: "face"}
     , {label: "Top hat"              , fileName: "TopHat.png"        , enabled: false , type: "accessories"}
     , {label: "Sunglasses"           , fileName: "CoolGlasses.png"   , enabled: false , type: "accessories"}
     , {label: "Monocle"              , fileName: "Monocle.png"       , enabled: false , type: "accessories"}
@@ -38,6 +55,8 @@ const layers =
     , {label: "Sus eyes"             , fileName: "SusEyes.png"       , enabled: false , type: "eyes"}
     , {label: "Stare eyes"           , fileName: "StareEyes.png"     , enabled: false , type: "eyes"}
     , {label: "Weeb eyes"            , fileName: "HappyEyes.png"     , enabled: false , type: "eyes"}
+
+    , {label: "Mustaches"            , fileName: "Mustaches.png"     , enabled: false , type: "face"}
 
     , {label: "Mouth"                , fileName: "WMouth.png"        , enabled: true  , type: "mouth"}
     , {label: "Ahegao mouth"         , fileName: "Ahegao.png"        , enabled: false , type: "mouth"}
@@ -62,59 +81,68 @@ const layers =
     , {label: "Grey Mustaches"       , fileName: "GrandMustache.png" , enabled: false , type: "face"}
     , {label: "Nose"                 , fileName: "Nose.png"          , enabled: true  , type: "face"}
     , {label: "Blush on cheeks"      , fileName: "Blush.png"         , enabled: false , type: "face"}
-    , {label: "Background"           , fileName: "HeadPhones.png"    , enabled: true  , type: "special"}
+    , {label: "Background"           , fileName: "HeadPhones.png"    , enabled: true  , type: "face"}
     , {label: "Shadow"               , fileName: "Shadow.png"        , enabled: false , type: "accessories"}
     ]
 
-function addRandomizeButton(type, clickHandler) {
-    const randButton = document.createElement("button")
-    randButton.title = type
-    randButton.appendChild(document.createTextNode(`Randomize ${icon4Type[type] || type}`))
-    randButton.addEventListener("click", clickHandler)
-
-    const li = document.createElement("li")
-    li.appendChild(randButton)
-    layersSelector.appendChild(li)
-}
-addRandomizeButton("All", e => {
-    layers.forEach(layer => {
-        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.20)
-        layer.checkbox.checked = layer.enabled
-    })
-    colorSelector.value = randomColor()
+randomizationSelector.addEventListener("click", e => {
+    if (e.target.tagName !== "BUTTON") return;
+    switch(e.target.id) {
+        case "Random-all":
+            if (limitEyesElem.checked || limitMouthElem.checked || limitFaceElem.checked || limitAccessoriesElem.checked) {
+                randOfType("eyes")
+                randOfType("mouth")
+                randOfType("face")
+                randOfType("accessories")
+            } else {
+                layers.forEach(layer => {
+                    layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.20)
+                    layer.checkbox.checked = layer.enabled
+                })
+            }
+            if (includingColorElem.checked) {
+                colorSelector.value = randomColor()
+            }
+            break
+        case "Random-eyes":
+            randOfType("eyes")
+            break
+        case "Random-mouth":
+            randOfType("mouth")
+            break
+        case "Random-face":
+            randOfType("face")
+            break
+        case "Random-accessories":
+            randOfType("accessories")
+            break
+        case "Random-color":
+            colorSelector.value = randomColor()
+            break
+        case "Reset-color":
+            colorSelector.value = DEFAULT_SKIN_COLOR
+            break
+        default:
+            console.error("Unknown button id", e.target.id)
+    }
     render()
     saveHistory()
 })
-addRandomizeButton("mouth", e => {
-    const layersOfType = layers.filter(layer => layer.type === "mouth")
-    const index = Math.floor(Math.random() * layersOfType.length)
-    layersOfType.forEach((layer, i) => {
-        layer.enabled = !layer.unwanted && (layer.desired || i === index)
-        layer.checkbox.checked = layer.enabled
-    })
-})
-addRandomizeButton("eyes", e => {
-    const layersOfType = layers.filter(layer => layer.type === "eyes")
-    const index = Math.floor(Math.random() * layersOfType.length)
-    layersOfType.forEach((layer, i) => {
-        layer.enabled = !layer.unwanted && (layer.desired || i === index)
-        layer.checkbox.checked = layer.enabled
-    })
-})
-addRandomizeButton("face", e => {
-    const layersOfType = layers.filter(layer => layer.type === "face")
-    layersOfType.forEach((layer, i) => {
-        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.23)
-        layer.checkbox.checked = layer.enabled
-    })
-})
-addRandomizeButton("accessories", e => {
-    const layersOfType = layers.filter(layer => layer.type === "accessories")
-    layersOfType.forEach((layer, i) => {
-        layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 0.21)
-        layer.checkbox.checked = layer.enabled
-    })
-})
+function randOfType(type) {
+    const layersOfType = layers.filter(layer => layer.type === type)
+    if (types[type].limit.checked) {
+        const index = Math.floor(Math.random() * layersOfType.length)
+        layersOfType.forEach((layer, i) => {
+            layer.enabled = !layer.unwanted && (layer.desired || i === index)
+            layer.checkbox.checked = layer.enabled
+        })
+    } else {
+        layersOfType.forEach((layer, i) => {
+            layer.enabled = !layer.unwanted && (layer.desired || Math.random() < 2 / layersOfType.length)
+            layer.checkbox.checked = layer.enabled
+        })
+    }
+}
 
 let loadedImages = 0
 layers.forEach((layer, i) => {
@@ -132,7 +160,7 @@ layers.forEach((layer, i) => {
 
     const label = document.createElement("label")
     label.appendChild(input)
-    label.appendChild(document.createTextNode(`${icon4Type[layer.type]} ${layer.label}`))
+    label.appendChild(document.createTextNode(`${types[layer.type].icon} ${layer.label}`))
 
     const li = document.createElement("li")
     li.appendChild(label)
@@ -161,13 +189,10 @@ colorSelector.value = DEFAULT_SKIN_COLOR
     layersSelector.appendChild(li)
 }
 
-
 function render() {
     ctx.fillStyle = colorSelector.value
     ctx.fillRect(0, 0, width, height)
-    const layersCopy = layers.map(x => x).sort((l1, l2) => {
-        return (l1.index + l1.sortingShift) - (l2.index + l2.sortingShift)
-    })
+    const layersCopy = layers.map(x => x).sort(accordingToShift)
     for (let i = layersCopy.length - 1; i >= 0; i--) {
         const layer = layersCopy[i]
         if (layer.enabled) {
@@ -369,7 +394,7 @@ function shuffle(array) {
   }
   return array;
 }
-const accordingToShift = (l1, l2) => {
+function accordingToShift(l1, l2) {
     return (l1.index + l1.sortingShift) - (l2.index + l2.sortingShift)
 }
 function updateLayerOrder() {
@@ -389,7 +414,7 @@ function randomColor() {
     const b = toHex(Math.floor(Math.random() * 256))
     return "#" + r + g + b;
 }
-const randButtons = document.querySelectorAll(".layers-selector button")
+const randButtons = [randAllElem, randEyesElem, randMouthElem, randFaceElem, randAccessoriesElem]
 window.addEventListener("keydown", e => {
     switch (e.code) {
         case "KeyR":

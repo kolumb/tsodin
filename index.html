@@ -15,7 +15,7 @@ body {
     color-scheme: dark;
     margin-bottom: 80px;
 }
-.wrapper {
+.main-wrapper {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
@@ -30,9 +30,13 @@ button {
 label, input, button {
     cursor: pointer;
 }
-label {
+.layers-selector label {
     display: flex;
     align-items: center;
+}
+label {
+    display: inline-block;
+    line-height: 40px;
     padding-left: 8px;
     user-select: none;
 }
@@ -54,6 +58,7 @@ input[type="color"] {
     max-height: 360px;
 }
 ul {
+    margin: 0;
     list-style-type: none;
 }
 li {
@@ -66,12 +71,16 @@ li {
     text-decoration: underline;
 }
 
-.keyboard-list {
-    display: flex;
-    flex-wrap: wrap;
+details {
+    margin: 1em 0;
 }
-.keyboard-list li {
-    padding-right: 3em;
+summary {
+    width: fit-content;
+    padding: 20px 5px;
+    cursor: pointer;
+}
+summary:hover {
+    background: #0002;
 }
 kbd {
     background-color: #eee;
@@ -103,14 +112,22 @@ kbd {
         max-height: 700px;
     }
 }
-@media (max-width: 950px) {
-    .wrapper {
+@media (max-width: 1000px) {
+    .main-wrapper {
         flex-direction: column;
     }
+    #CanvasResult {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
 }
-@media (max-width: 605px) {
+@media (max-width: 620px) {
     .layers-selector {
         max-height: none;
+    }
+    #CanvasResult {
+        width: 250px;
     }
 }
 
@@ -118,17 +135,63 @@ kbd {
     <script defer src="emote-generator.js"></script>
 </head>
 <body>
-    <p>Generator for emotes created by <a href="https://tsoding.org/">Tsoding</a> and his community.</p>
-    <div class="wrapper">
+    <p>Generator for emotes that are created by <a href="https://tsoding.org/">Tsoding</a> and his community.</p>
+    <div class="main-wrapper">
         <canvas id="CanvasResult"></canvas>
         <ul class="layers-selector">
         </ul>
     </div>
-    <button id="DownloadElem">Download</button> <button id="ShareElem">Share</button>
-    <p>Keyboard controls:
-        <ul class="keyboard-list">
+    <button id="DownloadElem" title="Keyboard shortcut - D">Download</button>
+    <button id="ShareElem" title="Keyboard shortcut - S">Share</button>
+    <details open>
+        <summary>Randomization:</summary>
+        <ul id="randomization-selector">
             <li>
-                <kbd>R</kbd> — <strong>R</strong>andom selection
+                <button id="Random-all" title="Keyboard shortcut - R">Randomize everything</button>
+                <label>
+                    <input id="including-color" type="checkbox">
+                    including color
+                </label>
+            </li>
+            <li>
+                <button id="Random-eyes" title="Eyes">Randomize 👁</button>
+                <label>
+                    <input id="limit-eyes" type="checkbox" checked>
+                    limit to one pair of eyes
+                </label>
+            </li>
+            <li>
+                <button id="Random-mouth" title="Mouth">Randomize 👄</button>
+                <label>
+                    <input id="limit-mouth" type="checkbox" checked>
+                    limit to one mouth
+                </label>
+            </li>
+            <li>
+                <button id="Random-face" title="Face features">Randomize 👃</button>
+                <label>
+                    <input id="limit-face" type="checkbox">
+                    limit to one facial feature
+                </label>
+            </li>
+            <li>
+                <button id="Random-accessories" title="Accessories">Randomize 🕶️</button>
+                <label>
+                    <input id="limit-accessories" type="checkbox">
+                    limit to one accessory
+                </label>
+            </li>
+            <li>
+                <button id="Random-color" title="Keyboard shortcut - C">Randomize skin color</button>
+                <button id="Reset-color" title="Set default skin color (Shift+C)">Reset</button>
+            </li>
+        </ul>
+    </details>
+    <details>
+        <summary>Keyboard controls:</summary>
+        <ul>
+            <li>
+                <kbd>R</kbd> — press <strong>R</strong>andom button from randomization list
             </li>
             <li>
                 <kbd>C</kbd> — Random <strong>C</strong>olor (Shift+C to reset)
@@ -149,7 +212,7 @@ kbd {
                 <kbd>S</kbd> — <strong>S</strong>haffle layer order (Shift+S to reset)
             </li>
         </ul>
-    </p>
+    </details>
     <canvas id="CanvasHistory"></canvas>
 </body>
 </html>
