@@ -5,17 +5,14 @@ const downloadElem = document.querySelector("#DownloadElem")
 const shareElem = document.querySelector("#ShareElem")
 
 const randomizationSelector = document.querySelector("#randomization-selector")
-const randAllElem = document.querySelector("#Random-all")
 const includingColorElem = document.querySelector("#including-color")
-const randEyesElem = document.querySelector("#Random-eyes")
 const limitEyesElem = document.querySelector("#limit-eyes")
-const randMouthElem = document.querySelector("#Random-mouth")
 const limitMouthElem = document.querySelector("#limit-mouth")
-const randFaceElem = document.querySelector("#Random-face")
 const limitFaceElem = document.querySelector("#limit-face")
-const randAccessoriesElem = document.querySelector("#Random-accessories")
 const limitAccessoriesElem = document.querySelector("#limit-accessories")
-const randColorElem = document.querySelector("#Random-color")
+
+const shuffleElem = document.querySelector("#Shuffle")
+const includingOrderElem = document.querySelector("#including-order")
 
 const canvas = document.querySelector("#CanvasResult")
 const ctx = canvas.getContext("2d", {alpha: false})
@@ -103,6 +100,10 @@ randomizationSelector.addEventListener("click", e => {
             if (includingColorElem.checked) {
                 colorSelector.value = randomColor()
             }
+            if (includingOrderElem.checked) {
+                shuffleLayers(false)
+                applyOrderOfLayers()
+            }
             break
         case "Random-eyes":
             randOfType("eyes")
@@ -121,6 +122,20 @@ randomizationSelector.addEventListener("click", e => {
             break
         case "Reset-color":
             colorSelector.value = DEFAULT_SKIN_COLOR
+            break
+        case "Shuffle":
+            shuffleLayers(false)
+            applyOrderOfLayers()
+            break
+        case "Order-up":
+            layerUp()
+            break
+        case "Order-down":
+            layerDown()
+            break
+        case "Reset-order":
+            shuffleLayers(true)
+            applyOrderOfLayers()
             break
         default:
             console.error("Unknown button id", e.target.id)
@@ -394,14 +409,42 @@ function shuffle(array) {
   }
   return array;
 }
+function shuffleLayers(reset) {
+    let indexes = layers.map(l => l.index)
+    if (reset === false) indexes = shuffle(indexes)
+    layers.forEach((l, i) => {
+        l.sortingShift = indexes[i] - l.index
+    })
+}
 function accordingToShift(l1, l2) {
     return (l1.index + l1.sortingShift) - (l2.index + l2.sortingShift)
 }
-function updateLayerOrder() {
+function applyOrderOfLayers() {
     layers.map(x=>x).sort(accordingToShift).forEach(l => {
         layersSelector.append(l.checkbox.parentElement.parentElement)
     })
     layersSelector.append(colorSelector.parentElement.parentElement)
+}
+
+function layerUp() {
+    if (lastSelectedLayer < 0) return
+    const layer = layers[lastSelectedLayer]
+    if (lastSelectedLayer + layer.sortingShift > 0) {
+        const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift - 1]
+        layer.sortingShift -= 1
+        otherLayer.sortingShift += 1
+        applyOrderOfLayers()
+    }
+}
+function layerDown() {
+    if (lastSelectedLayer < 0) return
+    const layer = layers[lastSelectedLayer]
+    if (lastSelectedLayer + layer.sortingShift < layers.length - 1) {
+        const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift + 1]
+        layer.sortingShift += 1
+        otherLayer.sortingShift -= 1
+        applyOrderOfLayers()
+    }
 }
 
 function toHex(numb) {
@@ -414,7 +457,13 @@ function randomColor() {
     const b = toHex(Math.floor(Math.random() * 256))
     return "#" + r + g + b;
 }
-const randButtons = [randAllElem, randEyesElem, randMouthElem, randFaceElem, randAccessoriesElem]
+const randButtons =
+    [ document.querySelector("#Random-all")
+    , document.querySelector("#Random-eyes")
+    , document.querySelector("#Random-mouth")
+    , document.querySelector("#Random-face")
+    , document.querySelector("#Random-accessories")
+    ]
 window.addEventListener("keydown", e => {
     switch (e.code) {
         case "KeyR":
@@ -444,37 +493,18 @@ window.addEventListener("keydown", e => {
                 redoIndex = Math.min(history.length - 1, redoIndex + 1)
                 deserializeState(history[redoIndex])
             } break
-        case "KeyS": {
-                let indexes = new Array(layers.length).fill(0).map((_, i) => i)
-                if (e.shiftKey === false) indexes = shuffle(indexes)
-                layers.forEach((l, i) => {
-                    l.sortingShift = indexes[i] - l.index
-                })
-                updateLayerOrder()
-                render()
-            } break
+        case "KeyS":
+            shuffleLayers(e.shiftKey)
+            applyOrderOfLayers()
+            render()
+            break
         case "ArrowLeft":
-            if (lastSelectedLayer >= 0) {
-                const layer = layers[lastSelectedLayer]
-                if (lastSelectedLayer + layer.sortingShift > 0) {
-                    const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift - 1]
-                    layer.sortingShift -= 1
-                    otherLayer.sortingShift += 1
-                    updateLayerOrder()
-                }
-                render()
-
-            } break
+            layerUp()
+            render()
+            break
         case "ArrowRight":
-            if (lastSelectedLayer >= 0) {
-                const layer = layers[lastSelectedLayer]
-                if (lastSelectedLayer + layer.sortingShift < layers.length - 1) {
-                    const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift + 1]
-                    layer.sortingShift += 1
-                    otherLayer.sortingShift -= 1
-                    updateLayerOrder()
-                }
-                render()
-            } break
+            layerDown()
+            render()
+            break
     }
 })
