@@ -187,7 +187,6 @@ layers.forEach((layer, i) => {
         loadedImages++
         if (loadedImages === layers.length) {
             render()
-            saveHistory()
         }
     })
 })
@@ -231,7 +230,7 @@ const historyList =
     , "001040000c0asffe6d5", "800000040c0as4ea4ec", "000400100c0esffe6d5", "52802000000asffe6d5"
     , "000400026c0asffe6d5", "008000000d0asffe6d5", "004000400c0asffe6d5", "000408000100sffe6d5"
     , "000800800c0asffe6d5", "000008000d0esffe6d5", "000280000c0esffe6d5", "000008000e08sffe6d5"
-    ]
+    , "800020000c0asffe6d5"]
 let redoIndex = 0
 const historyCanvas = document.querySelector("#CanvasHistory")
 const historyCtx = historyCanvas.getContext("2d", {alpha: false})
