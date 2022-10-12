@@ -223,13 +223,26 @@ function download(name, dataString) {
     link.click()
 }
 
-const historyList = []
+const historyList =
+    [ "800080002c0asffe6d5", "000400000d0asffe6d5", "000004010c0asffe6d5", "b00010040010sffe6d5"
+    , "00000210040asffe6d5", "800000000200sffe6d5", "000001000d0asffe6d5", "008020000c0asffe6d5"
+    , "000120001c0asffe6d5", "000001100c0asffe6d5", "002000200c0asffe6d5", "002000080c0asffe6d5"
+    , "002080000c0asffe6d5", "000029000c0asffe6d5", "000002000102sffe6d5", "008000800208sffe6d5"
+    , "001040000c0asffe6d5", "800000040c0as4ea4ec", "000400100c0esffe6d5", "52802000000asffe6d5"
+    , "000400026c0asffe6d5", "008000000d0asffe6d5", "004000400c0asffe6d5", "000408000100sffe6d5"
+    , "000800800c0asffe6d5", "000008000d0esffe6d5", "000280000c0esffe6d5", "000008000e08sffe6d5"
+    ]
 let redoIndex = 0
 const historyCanvas = document.querySelector("#CanvasHistory")
 const historyCtx = historyCanvas.getContext("2d", {alpha: false})
 const historySize = 48
 historyCtx.fillStyle = "#393947"
 historyCtx.fillRect(0, 0, historyCanvas.width, historyCanvas.height)
+const initialHistory = new Image()
+initialHistory.src = `${imagesFolder}/initialHistory.png`
+initialHistory.addEventListener("load", e => {
+    historyCtx.drawImage(initialHistory, 0, 0)
+})
 
 function updateHistoryDimentions() {
     const snapshot = historyCtx.getImageData(0, 0, historyCanvas.width, historyCanvas.height)
