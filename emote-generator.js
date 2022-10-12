@@ -223,7 +223,7 @@ function download(name, dataString) {
     link.click()
 }
 
-const history = []
+const historyList = []
 let redoIndex = 0
 const historyCanvas = document.querySelector("#CanvasHistory")
 const historyCtx = historyCanvas.getContext("2d", {alpha: false})
@@ -244,12 +244,12 @@ updateHistoryDimentions()
 const HISTORY_GAP = 2
 function saveHistory() {
     const historyEntry = serializeState()
-    if (historyEntry !== history[history.length - 1]) {
+    if (historyEntry !== historyList[historyList.length - 1]) {
         historyCtx.drawImage(historyCanvas, historySize + HISTORY_GAP, 0)
         historyCtx.drawImage(canvas, 0, 0, historySize, historySize)
-        history.push(historyEntry)
+        historyList.push(historyEntry)
     }
-    redoIndex = history.length - 1
+    redoIndex = historyList.length - 1
 }
 function serializeState() {
     const bits = layers.map(l=>l.enabled ? 1:0)
@@ -301,7 +301,7 @@ if (location.search) {
 
 if (navigator.canShare && navigator.canShare({url: location.href})) {
     shareElem.addEventListener("click", e => {
-        const state = history[redoIndex]
+        const state = historyList[redoIndex]
         const url = location.href.split("?")[0] + "?" + state
         navigator.share({url: url})
         history.replaceState(null, '', url);
@@ -329,7 +329,7 @@ if (navigator.canShare && navigator.canShare({url: location.href})) {
       return true
     };
     shareElem.addEventListener("click", e => {
-        const state = history[redoIndex]
+        const state = historyList[redoIndex]
         const url = location.href.split("?")[0] + "?" + state
         alert(copyToClipboard(url) ? `Copied url to clipboard: ${url}` : `Failed to copy the url: ${url}`)
         history.replaceState(null, '', url);
@@ -392,9 +392,9 @@ downloadElem.addEventListener("click", e => {
 historyCanvas.addEventListener("click", e => {
     const x = e.offsetX
     const index = Math.floor(x / (historySize + HISTORY_GAP))
-    if (index > history.length - 1) return;
-    redoIndex = history.length - 1 - index
-    deserializeState(history[redoIndex])
+    if (index > historyList.length - 1) return;
+    redoIndex = historyList.length - 1 - index
+    deserializeState(historyList[redoIndex])
 })
 
 // https://bost.ocks.org/mike/shuffle/
@@ -484,14 +484,14 @@ window.addEventListener("keydown", e => {
             if (e.ctrlKey) {
                 if (e.shiftKey === false) {
                     redoIndex = Math.max(0, redoIndex - 1)
-                    deserializeState(history[redoIndex])
+                    deserializeState(historyList[redoIndex])
                     break
                 }
             } // fall through
         case "KeyY":
             if (e.ctrlKey) {
-                redoIndex = Math.min(history.length - 1, redoIndex + 1)
-                deserializeState(history[redoIndex])
+                redoIndex = Math.min(historyList.length - 1, redoIndex + 1)
+                deserializeState(historyList[redoIndex])
             } break
         case "KeyS":
             shuffleLayers(e.shiftKey)
