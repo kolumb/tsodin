@@ -238,6 +238,7 @@ function render() {
     }
     // TODO: implement font-size setting
     // TODO: implement a way to change order of unicode eyes layer
+    // TODO: add unicode serialization
     let eyeSymbol = unicodeSelector.value
     const leftEyeX = 150
     const leftEyeY = 120
