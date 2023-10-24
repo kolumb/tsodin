@@ -238,20 +238,26 @@ function render() {
     }
     // TODO: implement font-size setting
     // TODO: implement a way to change order of unicode eyes layer
-    const eyeSymbol = unicodeSelector.value
+    let eyeSymbol = unicodeSelector.value
+    const leftEyeX = 150
+    const leftEyeY = 120
+    const rightEyeX = 214
+    const rightEyeY = 138
+    const leftEyeA = 0.05
+    const rightEyeA = 0.14
     ctx.fillStyle = "black"
     ctx.save()
     ctx.textAlign = "right"
-    ctx.font = "50px sans-serif"
-    ctx.translate(118, 101)
-    ctx.rotate(0.2-0.05)
+    ctx.font = "100px sans-serif"
+    ctx.translate(leftEyeX, leftEyeY)
+    ctx.rotate(0.2-leftEyeA)
     ctx.fillText(eyeSymbol, 0, 0)
     ctx.restore()
     ctx.save()
     ctx.textAlign = "left"
-    ctx.font = "54px sans-serif"
-    ctx.translate(261, 137)
-    ctx.rotate(0.2+0.14)
+    ctx.font = "108px sans-serif"
+    ctx.translate(rightEyeX, rightEyeY)
+    ctx.rotate(0.2+rightEyeA)
     ctx.fillText(eyeSymbol, 0, 0)
     ctx.restore()
 }
@@ -524,6 +530,7 @@ const randButtons =
     , document.querySelector("#Random-accessories")
     ]
 window.addEventListener("keydown", e => {
+    if (e.target.type == "text") return;
     switch (e.code) {
         case "KeyR":
             if (e.ctrlKey === false) {
