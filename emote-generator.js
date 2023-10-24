@@ -190,6 +190,29 @@ layers.forEach((layer, i) => {
         }
     })
 })
+const unicodeSelector = document.createElement("input")
+unicodeSelector.type = "text"
+unicodeSelector.value = ""
+unicodeSelector.placeholder = ""
+unicodeSelector.classList.add("unicode-eyes")
+unicodeSelector.addEventListener("focus", e => {
+  e.currentTarget.select()
+})
+unicodeSelector.addEventListener("input", e => {
+  // TODO: split by grapheme and leave only last one
+  // https://stackoverflow.com/questions/35223206/how-to-split-unicode-string-to-characters-in-javascript
+  render()
+})
+{
+    const label = document.createElement("label")
+    label.appendChild(document.createTextNode("Unicode eyes"))
+    label.appendChild(unicodeSelector)
+
+    const li = document.createElement("li")
+    li.appendChild(label)
+    layersSelector.appendChild(li)
+}
+
 const colorSelector = document.createElement("input")
 colorSelector.type = "color"
 colorSelector.value = DEFAULT_SKIN_COLOR
@@ -206,13 +229,31 @@ colorSelector.value = DEFAULT_SKIN_COLOR
 function render() {
     ctx.fillStyle = colorSelector.value
     ctx.fillRect(0, 0, width, height)
-    const layersCopy = layers.map(x => x).sort(accordingToShift)
+    const layersCopy = layers.map(copyRefs).sort(accordingToShift)
     for (let i = layersCopy.length - 1; i >= 0; i--) {
         const layer = layersCopy[i]
         if (layer.enabled) {
             ctx.drawImage(layer.image, 0, 0)
         }
     }
+    // TODO: implement font-size setting
+    // TODO: implement a way to change order of unicode eyes layer
+    const eyeSymbol = unicodeSelector.value
+    ctx.fillStyle = "black"
+    ctx.save()
+    ctx.textAlign = "right"
+    ctx.font = "50px sans-serif"
+    ctx.translate(118, 101)
+    ctx.rotate(0.2-0.05)
+    ctx.fillText(eyeSymbol, 0, 0)
+    ctx.restore()
+    ctx.save()
+    ctx.textAlign = "left"
+    ctx.font = "54px sans-serif"
+    ctx.translate(261, 137)
+    ctx.rotate(0.2+0.14)
+    ctx.fillText(eyeSymbol, 0, 0)
+    ctx.restore()
 }
 
 function download(name, dataString) {
@@ -428,13 +469,17 @@ function shuffleLayers(reset) {
         l.sortingShift = indexes[i] - l.index
     })
 }
+function copyRefs(x) {
+    return x
+}
 function accordingToShift(l1, l2) {
     return (l1.index + l1.sortingShift) - (l2.index + l2.sortingShift)
 }
 function applyOrderOfLayers() {
-    layers.map(x=>x).sort(accordingToShift).forEach(l => {
+    layers.map(copyRefs).sort(accordingToShift).forEach(l => {
         layersSelector.append(l.checkbox.parentElement.parentElement)
     })
+    layersSelector.append(unicodeSelector.parentElement.parentElement)
     layersSelector.append(colorSelector.parentElement.parentElement)
 }
 
@@ -442,7 +487,8 @@ function layerUp() {
     if (lastSelectedLayer < 0) return
     const layer = layers[lastSelectedLayer]
     if (lastSelectedLayer + layer.sortingShift > 0) {
-        const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift - 1]
+        const otherLayer = layers.map(copyRefs)
+          .sort(accordingToShift)[lastSelectedLayer + layer.sortingShift - 1]
         layer.sortingShift -= 1
         otherLayer.sortingShift += 1
         applyOrderOfLayers()
@@ -452,7 +498,8 @@ function layerDown() {
     if (lastSelectedLayer < 0) return
     const layer = layers[lastSelectedLayer]
     if (lastSelectedLayer + layer.sortingShift < layers.length - 1) {
-        const otherLayer = layers.map(x=>x).sort(accordingToShift)[lastSelectedLayer + layer.sortingShift + 1]
+        const otherLayer = layers.map(copyRefs)
+          .sort(accordingToShift)[lastSelectedLayer + layer.sortingShift + 1]
         layer.sortingShift += 1
         otherLayer.sortingShift -= 1
         applyOrderOfLayers()
